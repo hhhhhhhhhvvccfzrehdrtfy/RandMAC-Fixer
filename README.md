@@ -1,35 +1,73 @@
-# RandMAC
+# RandMAC ⚡
 
-RandMAC is a Windows Wi-Fi MAC randomization repair and switching tool built for stubborn adapters that refuse to work with normal MAC spoofing tools.
+RandMAC is a Windows Wi-Fi MAC randomization repair and switching tool built for the adapters that refuse to cooperate.
 
-Most MAC spoofing tools try to change the adapter address directly. That works for some Ethernet cards and older adapters, but modern Windows Wi-Fi is different. On many Wi-Fi adapters, especially newer Realtek cards, Windows uses its own randomization system through WLAN profiles, interface GUIDs, and WlanSvc registry state. If any of those layers get stuck, the driver may claim “MAC Randomization: Enabled” while Windows still refuses to actually randomize the address.
+Most MAC spoofing tools try the obvious route: change the adapter’s MAC address directly and hope Windows listens. That works sometimes, but modern Windows Wi-Fi is messier than that. On newer adapters, Windows uses its own randomization system through WLAN profiles, interface GUIDs, WlanSvc registry state, and adapter-specific driver support. If even one of those layers gets stuck, your driver can say “MAC Randomization: Enabled” while Windows still refuses to actually change the router-facing MAC.
 
-RandMAC was created after a real case where a Realtek 8852BE-VT Wi-Fi adapter would not spoof through normal methods. Windows showed MAC randomization as disabled, the profile had randomization off, and standard spoofing tools could not force the router-facing MAC address to change. After testing the Windows WLAN system, driver state, Wi-Fi profiles, registry keys, and adapter GUIDs, the working fix was found: target the active Wi-Fi interface GUID, repair the WlanSvc randomization state, enable daily randomization on the connected Wi-Fi profile, reconnect, and verify the address actually changed.
+RandMAC was built to attack that exact problem.
 
-That is what RandMAC automates.
+Instead of blindly writing a fake MAC and pretending it worked, RandMAC checks the live Wi-Fi interface, finds the current active Windows Wi-Fi GUID, repairs the hidden WlanSvc randomization state, enables randomization on the saved Wi-Fi profile, reconnects the network, and verifies whether the MAC actually changed.
 
-RandMAC can scan the active Wi-Fi interface, display the current adapter GUID, show the current MAC address, check Windows’ MAC randomization status, back up relevant registry and Wi-Fi profile data, enable randomization for the active Wi-Fi interface, switch the randomized MAC, reconnect Wi-Fi, and verify whether the MAC actually changed. Instead of blindly claiming success, RandMAC compares the old and new MAC addresses and reports whether the switch worked.
+No guessing. No fake success message. RandMAC checks the old MAC against the new MAC and tells you if the switch worked.
 
-The tool is designed for privacy, troubleshooting, and research on devices you own or are allowed to manage. It can help when Windows gets stuck using the permanent hardware MAC even though randomization should be available. It is especially useful for cases where the issue is not the network adapter itself, but Windows applying randomization settings to the wrong or outdated Wi-Fi interface state.
+## Why RandMAC exists
 
-RandMAC does not include driver hacking, unsigned driver installation, kernel drivers, or INF modification. The public release focuses on the clean method that worked: Windows WLAN randomization repair through the current active Wi-Fi GUID and saved Wi-Fi profile settings.
+Some adapters, especially stubborn modern Wi-Fi cards, can fail with normal MAC spoofing tools. Windows may show randomization as disabled, blocked, or stuck even when the driver claims it supports the feature. In some cases, the issue is not the hardware itself. The real problem is that Windows is applying randomization settings to the wrong or outdated Wi-Fi interface state.
 
-Main features:
+RandMAC focuses on the layer most tools ignore:
 
-* Scan active Windows Wi-Fi adapter information
+**Windows’ hidden Wi-Fi GUID randomization state.**
+
+That is what makes it different from a normal MAC spoofer.
+
+## Features
+
+* Scan the active Windows Wi-Fi adapter
 * Detect the current Wi-Fi interface GUID
-* Display the current router-facing MAC address
-* Check whether Windows MAC randomization is enabled
-* Enable randomization for the active interface
-* Set the current Wi-Fi profile to daily randomization
-* Switch to a new randomized MAC address
+* Show the current router-facing MAC address
+* Check Windows MAC randomization status
+* Enable randomization for the active Wi-Fi interface
+* Set the connected Wi-Fi profile to daily randomization
+* Switch to a new randomized MAC
 * Disconnect and reconnect Wi-Fi automatically
 * Verify old MAC vs new MAC
 * Create backups before making changes
-* Export reports with privacy-conscious redaction options
+* Export privacy-conscious reports
+* Avoid risky driver hacking or unsigned driver installs
 
-RandMAC is not meant to be a ban evasion tool or a way to abuse networks. It is a repair utility for Windows Wi-Fi randomization problems, intended for legitimate privacy, testing, and troubleshooting on your own computer.
+## What RandMAC is for
 
-The original test case successfully changed a Realtek 8852BE-VT adapter from its permanent hardware MAC to a randomized Windows Wi-Fi MAC after normal spoofing tools failed.
+RandMAC is designed for privacy, troubleshooting, and research on devices you own or are allowed to manage. It can help when Windows gets stuck using the permanent hardware MAC even though Wi-Fi randomization should be available.
 
-Built by Chase Flood with development and troubleshooting assistance from ChatGPT.
+Good uses include:
+
+* Privacy on trusted or public Wi-Fi
+* Fixing broken Windows randomization
+* Testing router/DHCP behavior
+* Researching adapter behavior
+* Troubleshooting stubborn Wi-Fi drivers
+
+RandMAC is not built for network abuse, ban evasion, or unauthorized access. Use it responsibly.
+
+## The core idea
+
+Normal tools often target the adapter.
+
+RandMAC targets the Windows Wi-Fi randomization system:
+
+1. Find the active Wi-Fi adapter
+2. Find the current Wi-Fi GUID
+3. Repair WlanSvc randomization values
+4. Enable profile-level randomization
+5. Reconnect Wi-Fi
+6. Verify the MAC actually changed
+
+If Windows was stuck because of a stale or broken randomization state, RandMAC can bring it back to life.
+
+## Built different ⚡
+
+RandMAC was created after a real-world troubleshooting case where normal spoofing tools failed, Windows claimed randomization was blocked, and the adapter refused to change through the usual methods. The working fix came from tracing the problem through Windows profiles, registry state, adapter GUIDs, and actual MAC verification.
+
+The result is a tool built for the annoying edge cases — the ones where the normal buttons do nothing.
+
+Built by Creator with development and troubleshooting assistance from ChatGPT.
